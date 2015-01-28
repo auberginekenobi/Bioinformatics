@@ -2,7 +2,7 @@
 """
 Created on Mon Jan 26 14:46:03 2015
 
-@author: chapmano
+@author: Owen Chapman & Gail Gallaher
 """
 import copy
 import numpy
@@ -21,31 +21,35 @@ def variance(vals):
         sdsum+=sd
     return sdsum/float(len(vals))
 
-def write():    
+def prob1():
+    """
+    runs problem 1. No input/output, but reads from "ChoData.txt" and writes results to "ChoVariance.txt".
+    Takes a list of gene expression values, sorts in reverse by expression variance, and writes sorted list.
+    """
     f=open("ChoData.txt",'r')
     w=open("ChoVariance.txt",'w')
     w.write(f.readline())#write the title
     
     cutoff = float(raw_input("Pick a number between 0 and 100: "))
     
-    nameline={}
+    #nameline={}
     namevar=[]
     
     for line in f:
         line=line.strip()
         words=line.split('\t')
         name=words[0]
-        nameline[name]=line
+        #nameline[name]=line
         vals=map(int,words[1:])
         var=variance(vals)
-        namevar.append((var,name))
+        namevar.append((var,name,line))
     namevar.sort(reverse=True)
     numtokeep=int((100-cutoff)*len(namevar)/100)
-    print numtokeep
+    #print numtokeep
     namevar=namevar[:numtokeep]
-    for (var,name) in namevar:
-        w.write(nameline[name])
-        print nameline[name]
+    for (var,name,line) in namevar:
+        w.write(line+'\n')#nameline[name])
+        #print nameline[name]
     f.close()
     w.close()
     
@@ -63,17 +67,22 @@ def translate(nucSeq, genCode):
             aaSeq = aaSeq + genCode[codon]
         else:
             return "Error: Sequence must only contain A, C, G, or T.\n"
-    return aaSeq   
+    return aaSeq
+
+def dnaFastaToString(inputfile):
+    sequence=''
+    return sequence
     
+def prob2():    
+    infile=raw_input('Enter the file with nucleotide sequences: ')
+    outfile=raw_input('Enter the output file name:')
+    code=int(raw_input("""Select the genetic code (default=code 1):
+    1. Standard Code
+    2. The Vertebrate Mitochondrial Code
+    3. The Yeast Mitochondrial Code
+    6. The Ciliate Code
+    Your Selection: """))
     
-infile=raw_input('Enter the file with nucleotide sequences: ')
-outfile=raw_input('Enter the output file name:')
-code=raw_input("""Select the genetic code (default=code 1):
-1. Standard Code
-2. The Vertebrate Mitochondrial Code
-3. The Yeast Mitochondrial Code
-6. The Ciliate Code
-Your Selection: """)
 standardCode = {'AAA': 'K', 'AAC': 'N', 'AAG': 'K', 'AAT': 'N',
            'ACA': 'T', 'ACC': 'T', 'ACG': 'T', 'ACT': 'T',
            'AGA': 'R', 'AGC': 'S', 'AGG': 'R', 'AGT': 'S',
@@ -106,11 +115,5 @@ yeastMitoCode['CGA'] = 'X'
 yeastMitoCode['CGG'] = 'X'
 ciliateCode = copy.deepcopy(standardCode)
 ciliateCode['TAA'] = 'Q'
-ciliateCode['TAG'] = 'Q'
-
-
-
-
-
-           
+ciliateCode['TAG'] = 'Q'          
 codeD = {1: standardCode, 2: vertMitoCode, 3: yeastMitoCode, 6: ciliateCode}
